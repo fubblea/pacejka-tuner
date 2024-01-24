@@ -1,4 +1,4 @@
-var cacheName = 'egui-template-pwa';
+var cacheName = 'pacejka-tuner-pwa';
 var filesToCache = [
     './',
     './index.html',
