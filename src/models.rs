@@ -37,10 +37,12 @@ impl Simple {
     }
 
     pub fn create_sliders(&mut self, ui: &mut egui::Ui) {
-        ui.add(egui::Slider::new(&mut self.fz, 0.0..=100000.0).text("Fz [N]"));
-        ui.add(egui::Slider::new(&mut self.b, 4.0..=12.0).text("B (Stiffness)"));
-        ui.add(egui::Slider::new(&mut self.c, 1.0..=2.0).text("C (Shape)"));
-        ui.add(egui::Slider::new(&mut self.d, 0.1..=0.9).text("D (Peak)"));
-        ui.add(egui::Slider::new(&mut self.e, -10.0..=1.0).text("E (Curvature)"));
+        ui.columns(2, |columns| {
+            columns[0].add(egui::Slider::new(&mut self.fz, 0.0..=100000.0).text("Fz [N]"));
+            columns[0].add(egui::Slider::new(&mut self.b, 4.0..=12.0).text("B (Stiffness)"));
+            columns[0].add(egui::Slider::new(&mut self.c, 1.0..=2.0).text("C (Shape)"));
+            columns[1].add(egui::Slider::new(&mut self.d, 0.1..=0.9).text("D (Peak)"));
+            columns[1].add(egui::Slider::new(&mut self.e, -10.0..=1.0).text("E (Curvature)"));
+        });
     }
 }
