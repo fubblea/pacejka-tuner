@@ -1,18 +1,17 @@
-use crate::models::{PacejkaModels, Simple};
+use crate::models::{create_model, Model, ModelType, PacejkaModel};
 use egui_plot::{Line, Plot, PlotPoints};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TunerApp {
-    model: PacejkaModels,
+    model: PacejkaModel,
 }
 
 impl Default for TunerApp {
     fn default() -> Self {
         Self {
-            // Example stuff:
-            model: PacejkaModels::Simple(Simple::default()),
+            model: create_model(ModelType::LateralSimple),
         }
     }
 }
@@ -67,69 +66,45 @@ impl eframe::App for TunerApp {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("Pacejka Tuner");
 
-            let label = get_model_label(&self.model);
+            let label = &self.model.get_model_label();
 
             egui::ComboBox::from_label("Select a model!")
                 .selected_text((label).to_string())
                 .show_ui(ui, |ui| {
                     ui.selectable_value(
                         &mut self.model,
-                        PacejkaModels::Simple(Simple::default()),
-                        "Simple",
+                        create_model(ModelType::LateralSimple),
+                        "Lateral Simple",
                     );
-                    ui.selectable_value(&mut self.model, PacejkaModels::Lateral, "Lateral '94");
                     ui.selectable_value(
                         &mut self.model,
-                        PacejkaModels::Longitudinal,
+                        create_model(ModelType::Lateral94),
+                        "Lateral '94",
+                    );
+                    ui.selectable_value(
+                        &mut self.model,
+                        create_model(ModelType::Longitudinal94),
                         "Longitudinal '94",
                     );
                 });
 
             ui.spacing();
 
-            let model_plot: PlotPoints = (0..500)
+            let model_plot: PlotPoints = (0..1600)
                 .step_by(1)
                 .map(|i| {
                     let x = i as f64 * 0.001;
-                    [x, get_model_fit(&self.model, x)]
+                    [x, self.model.calc_f(x)]
                 })
                 .collect();
             let line = Line::new(model_plot);
             Plot::new("model_plot")
                 .view_aspect(2.0)
-                .y_axis_label(get_model_axis_label(&self.model))
+                .y_axis_label(self.model.get_model_axis_label())
                 .x_axis_label("Slip Angle (rad)")
                 .show(ui, |plot_ui| plot_ui.line(line));
 
-            match self.model {
-                PacejkaModels::Simple(ref mut simple) => simple.create_sliders(ui),
-                PacejkaModels::Lateral => (),
-                PacejkaModels::Longitudinal => (),
-            };
+            self.model.create_sliders(ui)
         });
-    }
-}
-
-fn get_model_fit(model: &PacejkaModels, x: f64) -> f64 {
-    match model {
-        PacejkaModels::Simple(simple) => simple.calc_f(x),
-        PacejkaModels::Lateral => 1.0,
-        PacejkaModels::Longitudinal => 1.0,
-    }
-}
-
-fn get_model_axis_label(model: &PacejkaModels) -> String {
-    match model {
-        PacejkaModels::Simple(_) => String::from("Lateral Force (N)"),
-        PacejkaModels::Lateral => String::from("Lateral Force (N)"),
-        PacejkaModels::Longitudinal => String::from("Longituindal Force (N)"),
-    }
-}
-
-fn get_model_label(model: &PacejkaModels) -> String {
-    match model {
-        PacejkaModels::Simple(_) => String::from("Simple"),
-        PacejkaModels::Lateral => String::from("Lateral '94"),
-        PacejkaModels::Longitudinal => String::from("Longitudinal '94"),
     }
 }
