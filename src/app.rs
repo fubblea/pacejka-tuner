@@ -1,4 +1,4 @@
-use crate::models::{create_model, Model, ModelType, PacejkaModel};
+use crate::models::{Model, ModelType, PacejkaModel};
 use egui_plot::{Line, Plot, PlotPoints};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -11,7 +11,7 @@ pub struct TunerApp {
 impl Default for TunerApp {
     fn default() -> Self {
         Self {
-            model: create_model(ModelType::LateralSimple),
+            model: PacejkaModel::create_model(ModelType::LateralSimple),
         }
     }
 }
@@ -73,17 +73,17 @@ impl eframe::App for TunerApp {
                 .show_ui(ui, |ui| {
                     ui.selectable_value(
                         &mut self.model,
-                        create_model(ModelType::LateralSimple),
+                        PacejkaModel::create_model(ModelType::LateralSimple),
                         "Lateral Simple",
                     );
                     ui.selectable_value(
                         &mut self.model,
-                        create_model(ModelType::Lateral94),
+                        PacejkaModel::create_model(ModelType::Lateral94),
                         "Lateral '94",
                     );
                     ui.selectable_value(
                         &mut self.model,
-                        create_model(ModelType::Longitudinal94),
+                        PacejkaModel::create_model(ModelType::Longitudinal94),
                         "Longitudinal '94",
                     );
                 });
