@@ -1,11 +1,8 @@
+name: Compile Binaries
 
 on:
   workflow_call:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-    branches: ["master"]
+  workflow_dispatch:
 
 jobs:
   compile:
