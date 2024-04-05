@@ -1,8 +1,8 @@
 pub trait Model {
     fn calc_f(&self, slip: f64) -> f64;
     fn create_sliders(&mut self, ui: &mut egui::Ui);
-    fn get_model_axis_label(&self) -> String;
-    fn get_model_label(&self) -> String;
+    fn get_model_axis_label() -> String;
+    fn get_model_label() -> String;
 }
 
 pub enum ModelType {
@@ -28,8 +28,8 @@ impl PacejkaModel {
     }
 }
 
-impl Model for PacejkaModel {
-    fn calc_f(&self, slip: f64) -> f64 {
+impl PacejkaModel {
+    pub fn calc_f(&self, slip: f64) -> f64 {
         match self {
             Self::LateralSimple(v) => v.calc_f(slip),
             Self::Lateral94(v) => v.calc_f(slip),
@@ -37,7 +37,7 @@ impl Model for PacejkaModel {
         }
     }
 
-    fn create_sliders(&mut self, ui: &mut egui::Ui) {
+    pub fn create_sliders(&mut self, ui: &mut egui::Ui) {
         match self {
             Self::LateralSimple(v) => v.create_sliders(ui),
             Self::Lateral94(v) => v.create_sliders(ui),
@@ -45,19 +45,19 @@ impl Model for PacejkaModel {
         }
     }
 
-    fn get_model_axis_label(&self) -> String {
+    pub fn get_model_axis_label(&self) -> String {
         match self {
-            Self::LateralSimple(v) => v.get_model_axis_label(),
-            Self::Lateral94(v) => v.get_model_axis_label(),
-            Self::Longitudinal94(v) => v.get_model_axis_label(),
+            Self::LateralSimple(_) => Simple::get_model_axis_label(),
+            Self::Lateral94(_) => Lateral::get_model_axis_label(),
+            Self::Longitudinal94(_) => Longitudinal::get_model_axis_label(),
         }
     }
 
-    fn get_model_label(&self) -> String {
+    pub fn get_model_label(&self) -> String {
         match self {
-            Self::LateralSimple(v) => v.get_model_label(),
-            Self::Lateral94(v) => v.get_model_label(),
-            Self::Longitudinal94(v) => v.get_model_label(),
+            Self::LateralSimple(_) => Simple::get_model_label(),
+            Self::Lateral94(_) => Lateral::get_model_label(),
+            Self::Longitudinal94(_) => Longitudinal::get_model_label(),
         }
     }
 }
@@ -101,12 +101,12 @@ impl Model for Simple {
         });
     }
 
-    fn get_model_axis_label(&self) -> String {
+    fn get_model_axis_label() -> String {
         String::from("Lateral Force (N)")
     }
 
-    fn get_model_label(&self) -> String {
-        String::from("Simple")
+    fn get_model_label() -> String {
+        String::from("Lateral Simple")
     }
 }
 
@@ -242,11 +242,11 @@ impl Model for Lateral {
         });
     }
 
-    fn get_model_axis_label(&self) -> String {
+    fn get_model_axis_label() -> String {
         String::from("Lateral Force (N)")
     }
 
-    fn get_model_label(&self) -> String {
+    fn get_model_label() -> String {
         String::from("Lateral '94")
     }
 }
@@ -358,11 +358,11 @@ impl Model for Longitudinal {
         })
     }
 
-    fn get_model_axis_label(&self) -> String {
+    fn get_model_axis_label() -> String {
         String::from("Longitudinal Force (N)")
     }
 
-    fn get_model_label(&self) -> String {
+    fn get_model_label() -> String {
         String::from("Longitudinal '94")
     }
 }
